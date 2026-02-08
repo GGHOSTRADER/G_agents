@@ -1,0 +1,40 @@
+----- AGENTIC WORK OPTIMIZATION -----
+
+Software developing
+--------------------
+Goal: Balance between Autonomy while keeping clarity and maintainability.
+
+-Prompting
+As a efficient python developer and clean architecture software engineer
+
+-Code Generating for reability and maintainability: 
+1) Ask for heavy documentation inside file on each function and doc string summary
+2) PURE FUNCTIONS: Ask agent to create pure functions, one function per action, so avoid nested functions, always have doc string describing the function in 8 words and telling what is the input and output. Use variables linting (check proper name). Also ask to avoi calling functions inside functions.
+3) Generate "dry" summary, Functions names, description of function in 1 sentence, necessary inputs with data type and what output with what datatype, state if it has side effects.
+4) High level summary and goal of the whole script
+5) Runtime Chain ( To see the actual flow of the application)
+6) Function Dependency Graph ( To understand what depends on what but if pure functions this should be limited)
+7) Use of type hints for functions
+
+
+-Contex for LLM
+1) Give Tree structure to LLM, use Tree in Linux
+2) Give imports with clear relative paths, be expecific that they are already made
+3) Give breef summary of imported functions, with input and output data types and what they do in 1 sentence, so LLM wont put extra arguments
+
+
+
+-Bug Handling
+1) Ask: give solution to this problem, with why you choose this way, what did you change
+2) Be expecific about what lines it can change and what it CANNOT change or touch
+3) Color/Label code changes on code and on 5 words why it was done + Date (line number of changes)
+
+-Testing and Architectural design
+5) TDD Implementation, Human user gives tests to pass and let agent develop the solution to pass the test.
+
+-Offline solutions
+7) LOCAL LLM for coding offline, probably no solution generating.
+	Provide clear relative path in instructions with
+
+
+-----------------------------------------------------------------------------------
