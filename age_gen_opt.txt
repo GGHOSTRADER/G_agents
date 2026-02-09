@@ -40,6 +40,35 @@ As a efficient python developer and clean architecture software engineer
 
 EXAMPLE CONTRACT
 
+structure
+Name (BOILER PLATE)
+----
+Input : names of variables or objects and how many
+Input data type: the type of them
+Input Origin: Points if its generated in this file or in another
+Output : what the output is
+Output Data Type: the type of the output
+Style: Pure Function , Clean architecture
+Description : Describe in high level what is happening
+Calculation : computer readable instructions to calculate
+invariants : Things that should always remain true.
+Failure Mode: What can invalidate the invariants, explanations.
+Acceptance criteria: Basically the high level defining of tests
+Assumptions / Guarantees : Things that are pre checked and done before  by another layer/process but are crucial
+
+Invarianat presents the truth to look for
+Failure Mode presents how the truth can be violated
+Acceptance Criteria presents how we test to see if
+
+
+Clean Architectural
+Domain: “I compute features”
+Application: “I decide when to compute”
+Adapter: “I fetch/emit data”
+
+
+
+
 modSlope5
 ----
 Input :  5 bar window Object called b, b class that contains the attributes .low , .high .close , .bar_num
@@ -55,8 +84,8 @@ invariants :
 	end points difference = bar_num[-1] - bar_num[-5] == 4,  
 	Buffer = len("buffer name") => 5 , 
 	Bar continuinity = all(bar_nums[i] == bar_nums[i-1] + 1 for i in range(1, 5))
-Failure Mode: 
-Acceptance Behavior:
+Failure Mode: Low Xor high Xor close == NAN
+Acceptance criteria:
 
 
 
