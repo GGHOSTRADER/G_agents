@@ -8,21 +8,20 @@ Goal: Balance between Autonomy while keeping clarity and maintainability.
 As a efficient python developer and clean architecture software engineer
 
 -Code Generating for reability and maintainability: 
-1) Ask for heavy documentation inside file on each function and doc string summary
-2) PURE FUNCTIONS: Ask agent to create pure functions, one function per action, so avoid nested functions, always have doc string describing the function in 8 words and telling what is the input and output. Use variables linting (check proper name). Also ask to avoi calling functions inside functions.
-3) Generate "dry" summary, Functions names, description of function in 1 sentence, necessary inputs with data type and what output with what datatype, state if it has side effects.
-4) High level summary and goal of the whole script
-5) Runtime Chain ( To see the actual flow of the application)
-6) Function Dependency Graph ( To understand what depends on what but if pure functions this should be limited)
-7) Use of type hints for functions
-
+1) Heavy documentation inside file on each function and doc string summary
+1) Use Verbs for functions, Injected collaborators : long and descriptive name and pure data gets noun
+2) PURE FUNCTIONS: Create pure functions, one function per action, avoid nested functions and Use of type hints for functions
+3) High level summary of what is the script doing, layers and goal of the whole script
+4) Generate summary, Enumerate Functions with it name, description of function in 1 sentence of 6 words, necessary inputs with data type and what output with what datatype, state if it has side effects.
+5) Every Function in the body of script should be enumerated and be in line with function summary enumeration.
+6) Generate Runtime Chain ( To see the actual flow of the application)
+7) Generate Function Dependency Graph ( To understand what depends on what but if pure functions this should be limited)
+8) Generate Data flow graph ( understnad what serves what in data)
 
 -Contex for LLM
 1) Give Tree structure to LLM, use Tree in Linux
 2) Give imports with clear relative paths, be expecific that they are already made
 3) Give breef summary of imported functions, with input and output data types and what they do in 1 sentence, so LLM wont put extra arguments
-
-
 
 -Bug Handling
 1) Ask: give solution to this problem, with why you choose this way, what did you change
@@ -38,55 +37,114 @@ As a efficient python developer and clean architecture software engineer
 	Provide clear relative path in instructions with
 
 
-EXAMPLE CONTRACT
 
-structure
-Name (BOILER PLATE)
-----
-Input : names of variables or objects and how many
-Input data type: the type of them
-Input Origin: Points if its generated in this file or in another
-Output : what the output is
-Output Data Type: the type of the output
-Style: Pure Function , Clean architecture
-Description : Describe in high level what is happening
-Calculation : computer readable instructions to calculate
-invariants : Things that should always remain true.
-Failure Mode: What can invalidate the invariants, explanations.
-Acceptance criteria: Basically the high level defining of tests
-Assumptions / Guarantees : Things that are pre checked and done before  by another layer/process but are crucial
 
+Software architecture supported by Agentic help
+
+---- Contract ----
 Invarianat presents the truth to look for
 Failure Mode presents how the truth can be violated
 Acceptance Criteria presents how we test to see if
 
+---- Clean Architectural ----
+Domain: “I compute features”  --> My business logic pure functions like modslope5
+Application: “I decide when to compute” --> Coordinates Domain, Application and Infrastructure
+Infrastructure: "I hold the tech that communicates with the outside world" --> My outside word like redis 
+	Adapter: (border of infra, before Domain) “I fetch/emit data” --> My translator between infrastructure and domain, xread and parser
 
-Clean Architectural
-Domain: “I compute features”
-Application: “I decide when to compute”
-Adapter: “I fetch/emit data”
+---- Code macro view ----
+Runtime chain = who calls whom
+Dependency graph = who needs whom to exist
+Data flow = what moves where
+
+
+EXAMPLE CONTRACT
+
+structure
+Summary 
+----
+- Directory Tree: Here goes the tree extracted from linux to give the agent quick context
+- Code dependency: Define the imports and locations that will be used as also if got dependency in other external Object
+- Input : names of variables or objects and how many
+- Input data type: the type of them
+- Input Origin: Points if its generated in this file or in another
+- Output : what the output is
+- Output Data Type: the type of the output
+- Style: Pure Function , Clean architecture
+- Location: Describes if it at the boundary
+- Description : Describe in high level what is happening
+- Side Effects: Describe if interacts with the outside world
+- Calculation : computer readable instructions to calculate
+- invariants : Things that should always remain true.
+- Failure Mode: What can invalidate the invariants, explanations.
+- Acceptance criteria: Basically the high level defining of tests
+- Assumptions / Guarantees : Things that are pre checked and done before  by another layer/process but are crucial
+- Data Dependency: Who is the owner of the data that this process relies on 
 
 
 
-
+Real Example
 modSlope5
 ----
-Input :  5 bar window Object called b, b class that contains the attributes .low , .high .close , .bar_num
-Input data type: Float
-Input Origin: comes from global process
-Output : Float
-Output Data Type:
-Style: Pure Function , Clean architecture
-Description : Slope of the last 5 bars
-Calculation : (high[-1] + low[-1] + close[-1])/3 - (high[-5] + low[-5] + close[-5])/3
-invariants : 
-	bar value = math.isfinite(modSlope5) # To cover Nan and inf
-	end points difference = bar_num[-1] - bar_num[-5] == 4,  
-	Buffer = len("buffer name") => 5 , 
-	Bar continuinity = all(bar_nums[i] == bar_nums[i-1] + 1 for i in range(1, 5))
-Failure Mode: Low Xor high Xor close == NAN
-Acceptance criteria:
+- Directory Tree: Not needed
+- Code Dependencies: None from previous layers / Functions
+- Input :  5-bar window deque container bar[i].attribute, attributes to use: .low , .high .close , .bar_num
+- Input data type: bar Object
+- Input Origin: Provided by Upstream BarWindow; already cast to numeric types.
+- Output : scalar
+- Output Data Type: Float
+- Style: Pure Function , Clean architecture , No side effect
+- Location: Not in boundary, This function enforces minimal local preconditions (length + continuity).
+- Description : Slope of the last 5 bars
+- Side effects: None
+- Calculation : (bars.high[-1] + bars.low[-1] + bars.close[-1])/3 - (bars.high[-5] + bars.low[-5] + bars.close[-5])/3
+- invariants :   
+	Bars in window = len(bars.high)==len(bars.low)==len(bars.close)==len(bars.bar_num)==5 , 
+	Bar continuinity = all(bars.bar_num[i] == bars.bar_num[i-1] + 1 for i in range(1, 5))
+	Slope result = result must isinstance(result, (float)), 
+- Failure Mode: 
+	Must raise BarWindowError if bar sequence  of bars.num_bar is not continous 
+	Must raise BarWindowError if len(bars.low) or len(bars.high) or len(bars.close) =! 5  
+	Must raise OutputError if bar sequence  of bars.bar_num is not Float
+- Acceptance criteria: 
+	Posite tests
+		Assert result is float
+		known fixture returns expected numeric value
+	Negative Tests
+		Raise BarWindowError if continuinity break of the 5 bars window
+		Raise BarWindowError For attributes of bars len(5) if != 5
+	Non-functional
+		No mutation, deterministic
+		 
 
+- Assumptions / Guarantees : 
+	Data casted and validated by Upstream BarWindow Contract , 
+	High, low and Close they all been revised. 
+- Data dependency: Upstream BarWindow / Bar ingestion
+
+
+
+
+Boiler PLATE
+Summary 
+----
+- Directory Tree: 
+- Code dependency: 
+- Input : 
+- Input data type: 
+- Input Origin: 
+- Output : 
+- Output Data Type: 
+- Style: 
+- Location: 
+- Description : 
+- Side Effects: 
+- Calculation : 
+- invariants : 
+- Failure Mode: 
+- Acceptance criteria: 
+- Assumptions / Guarantees : 
+- Data Dependency:  
 
 
 
