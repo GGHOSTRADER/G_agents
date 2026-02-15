@@ -14,9 +14,10 @@ As a efficient python developer and clean architecture software engineer
 3) High level summary of what is the script doing, layers and goal of the whole script
 4) Generate summary, Enumerate Functions with it name, description of function in 1 sentence of 6 words, necessary inputs with data type and what output with what datatype, state if it has side effects.
 5) Every Function in the body of script should be enumerated and be in line with function summary enumeration.
-6) Generate Runtime Chain ( To see the actual flow of the application)
+6) Generate Runtime Chain graph ( To see the actual flow of the application)
 7) Generate Function Dependency Graph ( To understand what depends on what but if pure functions this should be limited)
 8) Generate Data flow graph ( understnad what serves what in data)
+9) Generate Flow control graph ( to see the potential branches if the runtimes)
 
 -Contex for LLM
 1) Give Tree structure to LLM, use Tree in Linux
@@ -53,10 +54,12 @@ Infrastructure: "I hold the tech that communicates with the outside world" --> M
 	Adapter: (border of infra, before Domain) “I fetch/emit data” --> My translator between infrastructure and domain, xread and parser
 
 ---- Code macro view ----
+Call Graph = 
+Control Flow = 
 Runtime chain = who calls whom in a sequential order in a specific execution
 	Several Runtime chains can coexist in one code
 Dependency graph = who needs whom to exist
-Data flow = Shows data state and transformations through the runtime
+Data flow = Shows data is created, its state and transformations through the runtime
 
 
 EXAMPLE CONTRACT
